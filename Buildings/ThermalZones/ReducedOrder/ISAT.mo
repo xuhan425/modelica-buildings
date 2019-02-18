@@ -309,7 +309,6 @@ https://bugs.launchpad.net/ubuntu/+source/python2.7/+bug/1115466</a>.
     extends Modelica.Blocks.Interfaces.DiscreteBlock(
       startTime=0,
       firstTrigger(fixed=true, start=false));
-
     parameter String moduleName
       "Name of the python module that contains the function";
     parameter String functionName=moduleName "Name of the python function";
@@ -459,40 +458,18 @@ Buildings.Utilities.IO.BCVTB.BCVTB</a>.
     extends Modelica.Icons.BasesPackage;
 
     function isatExchangeData "Function that communicates with ISAT"
-      input String moduleName
-        "Name of the python module that contains the function";
-      input String functionName=moduleName "Name of the python function";
-
-      input Real    dblWri[max(1, nDblWri)] "Double values to write";
-      input Integer intWri[max(1, nIntWri)] "Integer values to write";
-      input String  strWri[max(1, nStrWri)] "String values to write";
-
-      input Integer nDblWri(min=0) "Number of double values to write";
-      input Integer nDblRea(min=0) "Number of double values to read";
-
-      input Integer nIntWri(min=0) "Number of integer values to write";
-      input Integer nIntRea(min=0) "Number of integer values to read";
-
-      input Integer nStrWri(min=0) "Number of strings to write";
-    //  input Integer nStrRea(min=0) "Number of strings to read";
-    //  input Integer strLenRea(min=0)
-    //    "Maximum length of each string that is read. If exceeded, the simulation stops with an error";
-
-      output Real    dblRea[max(1, nDblRea)] "Double values returned by Python";
-      output Integer intRea[max(1, nIntRea)] "Integer values returned by Python";
-
-      external "C" pythonExchangeValues(moduleName, functionName,
-                                        dblWri, nDblWri,
-                                        dblRea, nDblRea,
-                                        intWri, nIntWri,
-                                        intRea, nIntRea,
-                                        strWri, nStrWri)
-        annotation (Library={"ModelicaBuildingsPython2.7",  "python2.7"},
-          LibraryDirectory={"modelica://Buildings/Resources/Library"},
-          IncludeDirectory="modelica://Buildings/Resources/C-Sources",
-          Include="#include \"python27Wrapper.c\"",
-          __iti_dll = "ITI_ModelicaBuildingsPython2.7.dll",
-          __iti_dllNoExport = true);
+      input Real[nU] u "Input to ISAT";
+      input Integer nU "Number of inputs to ISAT";
+      input Integer nY "Number of outputs from ISAT";
+      output Real[nY] y "Output computed by ISAT";
+      output Integer retVal "Return value for ISAT simulation status";
+    external"C" retVal = cfdExchangeData(
+        u,
+        nU,
+        nY,
+        modTimRea,
+        y) annotation (Include="#include <isatExchangeData.c>", IncludeDirectory=
+            "modelica://Buildings/Resources/C-Sources");
 
       annotation (Documentation(info="<html>
 <p>
@@ -520,56 +497,27 @@ First implementation.
     end isatExchangeData;
 
     function isatStartCosimulation "Start the coupled simulation with ISAT"
-      input String cfdFilNam "CFD input file name";
-      input String[nSur] name "Surface names";
-      input Modelica.SIunits.Area[nSur] A "Surface areas";
-      input Modelica.SIunits.Angle[nSur] til "Surface tilt";
-      input Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions[nSur] bouCon
-        "Type of boundary condition";
-      input Integer nPorts(min=0)
-        "Number of fluid ports for the HVAC inlet and outlets";
-      input String portName[nPorts]
-        "Names of fluid ports as declared in the CFD input file";
-      input Boolean haveSensor "Flag, true if the model has at least one sensor";
-      input String sensorName[nSen]
-        "Names of sensors as declared in the CFD input file";
-      input Boolean haveShade "Flag, true if the windows have a shade";
-      input Integer nSur "Number of surfaces";
-      input Integer nSen(min=0)
-        "Number of sensors that are connected to CFD output";
-      input Integer nConExtWin(min=0) "number of exterior construction with window";
-      input Integer nXi(min=0) "Number of independent species";
-      input Integer nC(min=0) "Number of trace substances";
-      input Modelica.SIunits.Density rho_start "Density at initial state";
+      input String isatCasPath "isat case path";
+      input Integer flaApp "flag of application for isat (0: room; 1: data center)";
+      input Integer flaTri "flag of train or evaluate isat (0: evaluate; 1: train)";
+      input Real err "define error tolerance for isat case";
       output Integer retVal
-        "Return value of the function (0 indicates CFD successfully started.)";
-    external"C" retVal = cfdStartCosimulation(
-        cfdFilNam,
-        name,
-        A,
-        til,
-        bouCon,
-        nPorts,
-        portName,
-        haveSensor,
-        sensorName,
-        haveShade,
-        nSur,
-        nSen,
-        nConExtWin,
-        nXi,
-        nC,
-        rho_start) annotation (Include="#include <cfdStartCosimulation.c>",
+        "Return value of the function (0 indicates ISAT successfully started.)";
+    external"C" retVal = isatStartCosimulation(
+        isatCasPath,
+        flaApp,
+        flaTri,
+        err) annotation (Include="#include <isatStartCosimulation.c>",
           IncludeDirectory="modelica://Buildings/Resources/C-Sources",
-          LibraryDirectory="modelica://Buildings/Resources/Library", Library="ffd");
+          LibraryDirectory="modelica://Buildings/Resources/Library", Library="isat");
 
       annotation (Documentation(info="<html>
 <p>
-This function calls a C function to start the coupled simulation with CFD.</html>",
+This function calls a C function to start the coupled simulation with ISAT.</html>",
             revisions="<html>
 <ul>
 <li>
-August 16, 2013, by Wangda Zuo:<br/>
+February 18, 2019, by Xu Han, Wangda Zuo:<br/>
 First implementation.
 </li>
 </ul>
@@ -579,8 +527,8 @@ First implementation.
 
     function isatSendStopCommand "Send the stop command to ISAT"
 
-    external"C" cfdSendStopCommand() annotation (Include=
-            "#include <cfdSendStopCommand.c>", IncludeDirectory=
+    external"C" isatSendStopCommand() annotation (Include=
+            "#include <isatSendStopCommand.c>", IncludeDirectory=
             "modelica://Buildings/Resources/C-Sources");
 
       annotation (Documentation(info="<html>
