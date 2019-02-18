@@ -455,10 +455,10 @@ Buildings.Utilities.IO.BCVTB.BCVTB</a>.
 </html>"));
   end ISAT;
 
-  package Functions "Package with functions that call Python"
+  package BaseClasses "Package with functions that call ISAT"
     extends Modelica.Icons.BasesPackage;
 
-    function ISATExchange "Function that communicates with ISAT"
+    function isatExchangeData "Function that communicates with ISAT"
       input String moduleName
         "Name of the python module that contains the function";
       input String functionName=moduleName "Name of the python function";
@@ -480,65 +480,23 @@ Buildings.Utilities.IO.BCVTB.BCVTB</a>.
 
       output Real    dblRea[max(1, nDblRea)] "Double values returned by Python";
       output Integer intRea[max(1, nIntRea)] "Integer values returned by Python";
-    protected
-      String pytPat "Value of PYTHONPATH environment variable";
-      String pytPatBuildings "PYTHONPATH of Buildings library";
-      Boolean havePytPat "true if PYTHONPATH is already set by the user";
-    //--  String filNam = "file://Utilities/IO/Python27/UsersGuide/package.mo"
-    //--    "Name to a file of the Buildings library";
-    algorithm
-     // Get the directory to Buildings/Resources/Python-Sources
-    //-- The lines below do not work in Dymola 2014 due to an issue with the loadResource
-    //-- (ticket #15168). This will be fixed in future versions.
-    //-- pytPatBuildings := Buildings.BoundaryConditions.WeatherData.BaseClasses.getAbsolutePath(uri=filNam);
-    //-- pytPatBuildings := Modelica.Utilities.Strings.replace(
-    //--   string=pytPatBuildings,
-    //--   searchString=filNam,
-    //--   replaceString="Resources/Python-Sources");
-     // The next line is a temporary fix for the above problem
-     pytPatBuildings := "Resources/Python-Sources";
-     // Update the PYTHONPATH variable
-     (pytPat, havePytPat) :=Modelica.Utilities.System.getEnvironmentVariable("PYTHONPATH");
-     if havePytPat then
-       Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
-          content=pytPat + ":" + pytPatBuildings);
-     else
-       Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
-          content=pytPatBuildings);
-     end if;
-     // Call the exchange function
-     (dblRea, intRea) :=BaseClasses.isatExchangeData(
-            moduleName=moduleName,
-            functionName=functionName,
-            dblWri=dblWri,
-            intWri=intWri,
-            strWri=strWri,
-            nDblWri=nDblWri,
-            nDblRea=nDblRea,
-            nIntWri=nIntWri,
-            nIntRea=nIntRea,
-            nStrWri=nStrWri);
 
-     // Change the PYTHONPATH back to what it was so that the function has no
-     // side effects.
-     if havePytPat then
-       Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
-          content=pytPat);
-     else
-       Modelica.Utilities.System.setEnvironmentVariable(name="PYTHONPATH",
-          content="");
-     end if;
+      external "C" pythonExchangeValues(moduleName, functionName,
+                                        dblWri, nDblWri,
+                                        dblRea, nDblRea,
+                                        intWri, nIntWri,
+                                        intRea, nIntRea,
+                                        strWri, nStrWri)
+        annotation (Library={"ModelicaBuildingsPython2.7",  "python2.7"},
+          LibraryDirectory={"modelica://Buildings/Resources/Library"},
+          IncludeDirectory="modelica://Buildings/Resources/C-Sources",
+          Include="#include \"python27Wrapper.c\"",
+          __iti_dll = "ITI_ModelicaBuildingsPython2.7.dll",
+          __iti_dllNoExport = true);
 
       annotation (Documentation(info="<html>
 <p>
-This function is a wrapper for
-<a href=\"modelica://Buildings.Utilities.IO.Python27.Functions.BaseClasses.exchange\">
-Buildings.Utilities.IO.Python27.Functions.BaseClasses.exchange</a>.
-It adds the directory <code>modelica://Buildings/Resources/Python-Sources</code>
-to the environment variable <code>PYTHONPATH</code>
-prior to calling the function that exchanges data with Python.
-After the function call, the <code>PYTHONPATH</code> is set back to what
-it used to be when entering this function.
+This function exchanges data with Python.
 See
 <a href=\"modelica://Buildings.Utilities.IO.Python27.UsersGuide\">
 Buildings.Utilities.IO.Python27.UsersGuide</a>
@@ -550,216 +508,6 @@ for examples.
 </html>",     revisions="<html>
 <ul>
 <li>
-May 2, 2013, by Michael Wetter:<br/>
-First implementation.
-</li>
-</ul>
-</html>"));
-    end ISATExchange;
-
-    package Examples "Collection of models that illustrate model use and test models"
-      extends Modelica.Icons.ExamplesPackage;
-
-      model Exchange "Test model for exchange function"
-        extends Modelica.Icons.Example;
-
-        Real    yR1[1] "Real function value";
-        Integer yI1[1] "Integer function value";
-        Real    yR2[2] "Real function value";
-        Integer yI2[2] "Integer function value";
-      algorithm
-        yR1 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
-                moduleName="testFunctions",
-                functionName="r1_r1",
-                dblWri={2.0},
-                intWri={0},
-                nDblWri=1,
-                nDblRea=1,
-                nIntWri=0,
-                nIntRea=0,
-                nStrWri=0,
-                strWri={""});
-          assert(abs(4-yR1[1]) < 1e-5, "Error in function r1_r1");
-
-        yR1 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
-                moduleName="testFunctions",
-                functionName="r2_r1",
-                dblWri={2.0,3.0},
-                intWri={0},
-                nDblWri=2,
-                nDblRea=1,
-                nIntWri=0,
-                nIntRea=0,
-                nStrWri=0,
-                strWri={""});
-          assert(abs(6-yR1[1]) < 1e-5, "Error in function r2_r1");
-
-        yR2 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
-                moduleName="testFunctions",
-                functionName="r1_r2",
-                dblWri={2.0},
-                intWri={0},
-                nDblWri=1,
-                nDblRea=2,
-                nIntWri=0,
-                nIntRea=0,
-                nStrWri=0,
-                strWri={""});
-        assert(abs(yR2[1]-2) + abs(yR2[2]-4) < 1E-5, "Error in function r1_r2");
-
-        // In the call below, yR1 is a dummy variable, as exchange returns (Real[1], Integer[1])
-        (yR1,yI1) :=
-          Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
-                moduleName="testFunctions",
-                functionName="i1_i1",
-                dblWri={0.0},
-                intWri={3},
-                nDblWri=0,
-                nDblRea=0,
-                nIntWri=1,
-                nIntRea=1,
-                nStrWri=0,
-                strWri={""});
-        assert((6-yI1[1]) < 1e-5, "Error in function i1_i1");
-
-        // In the call below, yR1 is a dummy variable, as exchange returns (Real[1], Integer[2])
-        (yR1,yI2) :=
-          Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
-                moduleName="testFunctions",
-                functionName="i1_i2",
-                dblWri={0.0},
-                intWri={2},
-                nDblWri=0,
-                nDblRea=0,
-                nIntWri=1,
-                nIntRea=2,
-                nStrWri=0,
-                strWri={""});
-        assert(abs(yI2[1]-2) + abs(yI2[2]-4) < 1E-5, "Error in function i1_i2");
-
-        yR2 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
-                moduleName="testFunctions",
-                functionName="r1i1_r2",
-                dblWri={0.3},
-                intWri={2},
-                nDblWri=1,
-                nDblRea=2,
-                nIntWri=1,
-                nIntRea=0,
-                nStrWri=0,
-                strWri={""});
-        assert(abs(yR2[1]-0.6) + abs(yI2[2]-4) < 1E-5, "Error in function r1i1_r2");
-
-        // From Modelica, write a number to a text file, and from Python, read the text file
-        // and return the number.
-        Modelica.Utilities.Files.removeFile(fileName="tmp-TestPythonInterface.txt");
-        Modelica.Utilities.Streams.print(string="1.23", fileName="tmp-TestPythonInterface.txt");
-        yR1 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
-                moduleName="testFunctions",
-                functionName="s2_r1",
-                dblWri={0.0},
-                intWri={0},
-                nDblWri=0,
-                nDblRea=1,
-                nIntWri=0,
-                nIntRea=0,
-                nStrWri=2,
-                strWri={"tmp-TestPythonInterface","txt"});
-         assert(abs(yR1[1]-1.23) < 1E-5, "Error in function s2_r1");
-
-        annotation (
-      experiment(Tolerance=1e-6, StopTime=1.0),
-      __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Utilities/IO/Python27/Functions/Examples/Exchange.mos"
-              "Simulate and plot"),
-      Documentation(info="<html>
-<p>
-This example calls various functions in the Python module <code>testFunctions.py</code>.
-It tests whether arguments and return values are passed correctly.
-The functions in  <code>testFunctions.py</code> are very simple in order to test
-whether they compute correctly, and whether the data conversion between Modelica and
-Python is implemented correctly.
-Each call to Python is followed by an <code>assert</code> statement which terminates
-the simulation if the return value is different from the expected value.
-</p>
-</html>",       revisions="<html>
-<ul>
-<li>
-February 2, 2016, by Michael Wetter:<br/>
-Changed constant arguments of exchange function from <code>int</code> to <code>double</code>.
-This is required for OpenModelica.
-</li>
-<li>
-January 31, 2013, by Michael Wetter:<br/>
-First implementation.
-</li>
-</ul>
-</html>"));
-      end Exchange;
-    annotation (preferredView="info", Documentation(info="<html>
-<p>
-This package contains examples for the use of models that can be found in
-<a href=\"modelica://Buildings.Utilities.IO.Python27.Functions\">
-Buildings.Utilities.IO.Python27.Functions</a>.
-</p>
-<p>
-The examples demonstrate how to call Python functions from Modelica.
-</p>
-</html>"));
-    end Examples;
-
-    package BaseClasses "Package with functions that call Python"
-      extends Modelica.Icons.BasesPackage;
-
-      function isatExchangeData "Function that communicates with ISAT"
-        input String moduleName
-          "Name of the python module that contains the function";
-        input String functionName=moduleName "Name of the python function";
-
-        input Real    dblWri[max(1, nDblWri)] "Double values to write";
-        input Integer intWri[max(1, nIntWri)] "Integer values to write";
-        input String  strWri[max(1, nStrWri)] "String values to write";
-
-        input Integer nDblWri(min=0) "Number of double values to write";
-        input Integer nDblRea(min=0) "Number of double values to read";
-
-        input Integer nIntWri(min=0) "Number of integer values to write";
-        input Integer nIntRea(min=0) "Number of integer values to read";
-
-        input Integer nStrWri(min=0) "Number of strings to write";
-      //  input Integer nStrRea(min=0) "Number of strings to read";
-      //  input Integer strLenRea(min=0)
-      //    "Maximum length of each string that is read. If exceeded, the simulation stops with an error";
-
-        output Real    dblRea[max(1, nDblRea)] "Double values returned by Python";
-        output Integer intRea[max(1, nIntRea)] "Integer values returned by Python";
-
-        external "C" pythonExchangeValues(moduleName, functionName,
-                                          dblWri, nDblWri,
-                                          dblRea, nDblRea,
-                                          intWri, nIntWri,
-                                          intRea, nIntRea,
-                                          strWri, nStrWri)
-          annotation (Library={"ModelicaBuildingsPython2.7",  "python2.7"},
-            LibraryDirectory={"modelica://Buildings/Resources/Library"},
-            IncludeDirectory="modelica://Buildings/Resources/C-Sources",
-            Include="#include \"python27Wrapper.c\"",
-            __iti_dll = "ITI_ModelicaBuildingsPython2.7.dll",
-            __iti_dllNoExport = true);
-
-        annotation (Documentation(info="<html>
-<p>
-This function exchanges data with Python.
-See
-<a href=\"modelica://Buildings.Utilities.IO.Python27.UsersGuide\">
-Buildings.Utilities.IO.Python27.UsersGuide</a>
-for instructions, and
-<a href=\"modelica://Buildings.Utilities.IO.Python27.Functions.Examples\">
-Buildings.Utilities.IO.Python27.Functions.Examples</a>
-for examples.
-</p>
-</html>",       revisions="<html>
-<ul>
-<li>
 March 27, 2013, by Thierry S. Nouidui:<br/>
 Added  a wrapper to <code>ModelicaFormatError</code> to support Windows OS.
 </li>
@@ -769,56 +517,56 @@ First implementation.
 </li>
 </ul>
 </html>"));
-      end isatExchangeData;
+    end isatExchangeData;
 
-      function isatStartCosimulation "Start the coupled simulation with ISAT"
-        input String cfdFilNam "CFD input file name";
-        input String[nSur] name "Surface names";
-        input Modelica.SIunits.Area[nSur] A "Surface areas";
-        input Modelica.SIunits.Angle[nSur] til "Surface tilt";
-        input Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions[nSur] bouCon
-          "Type of boundary condition";
-        input Integer nPorts(min=0)
-          "Number of fluid ports for the HVAC inlet and outlets";
-        input String portName[nPorts]
-          "Names of fluid ports as declared in the CFD input file";
-        input Boolean haveSensor "Flag, true if the model has at least one sensor";
-        input String sensorName[nSen]
-          "Names of sensors as declared in the CFD input file";
-        input Boolean haveShade "Flag, true if the windows have a shade";
-        input Integer nSur "Number of surfaces";
-        input Integer nSen(min=0)
-          "Number of sensors that are connected to CFD output";
-        input Integer nConExtWin(min=0) "number of exterior construction with window";
-        input Integer nXi(min=0) "Number of independent species";
-        input Integer nC(min=0) "Number of trace substances";
-        input Modelica.SIunits.Density rho_start "Density at initial state";
-        output Integer retVal
-          "Return value of the function (0 indicates CFD successfully started.)";
-      external"C" retVal = cfdStartCosimulation(
-          cfdFilNam,
-          name,
-          A,
-          til,
-          bouCon,
-          nPorts,
-          portName,
-          haveSensor,
-          sensorName,
-          haveShade,
-          nSur,
-          nSen,
-          nConExtWin,
-          nXi,
-          nC,
-          rho_start) annotation (Include="#include <cfdStartCosimulation.c>",
-            IncludeDirectory="modelica://Buildings/Resources/C-Sources",
-            LibraryDirectory="modelica://Buildings/Resources/Library", Library="ffd");
+    function isatStartCosimulation "Start the coupled simulation with ISAT"
+      input String cfdFilNam "CFD input file name";
+      input String[nSur] name "Surface names";
+      input Modelica.SIunits.Area[nSur] A "Surface areas";
+      input Modelica.SIunits.Angle[nSur] til "Surface tilt";
+      input Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions[nSur] bouCon
+        "Type of boundary condition";
+      input Integer nPorts(min=0)
+        "Number of fluid ports for the HVAC inlet and outlets";
+      input String portName[nPorts]
+        "Names of fluid ports as declared in the CFD input file";
+      input Boolean haveSensor "Flag, true if the model has at least one sensor";
+      input String sensorName[nSen]
+        "Names of sensors as declared in the CFD input file";
+      input Boolean haveShade "Flag, true if the windows have a shade";
+      input Integer nSur "Number of surfaces";
+      input Integer nSen(min=0)
+        "Number of sensors that are connected to CFD output";
+      input Integer nConExtWin(min=0) "number of exterior construction with window";
+      input Integer nXi(min=0) "Number of independent species";
+      input Integer nC(min=0) "Number of trace substances";
+      input Modelica.SIunits.Density rho_start "Density at initial state";
+      output Integer retVal
+        "Return value of the function (0 indicates CFD successfully started.)";
+    external"C" retVal = cfdStartCosimulation(
+        cfdFilNam,
+        name,
+        A,
+        til,
+        bouCon,
+        nPorts,
+        portName,
+        haveSensor,
+        sensorName,
+        haveShade,
+        nSur,
+        nSen,
+        nConExtWin,
+        nXi,
+        nC,
+        rho_start) annotation (Include="#include <cfdStartCosimulation.c>",
+          IncludeDirectory="modelica://Buildings/Resources/C-Sources",
+          LibraryDirectory="modelica://Buildings/Resources/Library", Library="ffd");
 
-        annotation (Documentation(info="<html>
+      annotation (Documentation(info="<html>
 <p>
 This function calls a C function to start the coupled simulation with CFD.</html>",
-              revisions="<html>
+            revisions="<html>
 <ul>
 <li>
 August 16, 2013, by Wangda Zuo:<br/>
@@ -827,18 +575,18 @@ First implementation.
 </ul>
 </html>"));
 
-      end isatStartCosimulation;
+    end isatStartCosimulation;
 
-      function isatSendStopCommand "Send the stop command to ISAT"
+    function isatSendStopCommand "Send the stop command to ISAT"
 
-      external"C" cfdSendStopCommand() annotation (Include=
-              "#include <cfdSendStopCommand.c>", IncludeDirectory=
-              "modelica://Buildings/Resources/C-Sources");
+    external"C" cfdSendStopCommand() annotation (Include=
+            "#include <cfdSendStopCommand.c>", IncludeDirectory=
+            "modelica://Buildings/Resources/C-Sources");
 
-        annotation (Documentation(info="<html>
+      annotation (Documentation(info="<html>
 <p>
 This function calls a C function to send a stop command to CFD to stop the CFD simulation.</html>",
-              revisions="<html>
+            revisions="<html>
 <ul>
 <li>
 August 16, 2013, by Wangda Zuo:<br/>
@@ -847,25 +595,19 @@ First implementation.
 </ul>
 </html>"));
 
-      end isatSendStopCommand;
-    annotation (preferredView="info", Documentation(info="<html>
-<p>
-This package contains functions that call Python.
-</p>
-</html>"));
-    end BaseClasses;
+    end isatSendStopCommand;
   annotation (preferredView="info", Documentation(info="<html>
 <p>
 This package contains functions that call Python.
 </p>
 </html>"));
-  end Functions;
+  end BaseClasses;
 
   package Examples "Collection of models that illustrate model use and test models"
     extends Modelica.Icons.ExamplesPackage;
 
-    model KalmanFilter
-      "Kalman filter implemented in Python and called from Modelica"
+    model DataCenter
+      "A data center case trained by ISAT and called from Modelica"
       extends Modelica.Icons.Example;
       ISAT ran(
         nDblWri=1,
@@ -954,7 +696,98 @@ First implementation.
 </li>
 </ul>
 </html>"));
-    end KalmanFilter;
+    end DataCenter;
+
+    model Room "A room case trained by ISAT and called from Modelica"
+      extends Modelica.Icons.Example;
+      ISAT ran(
+        nDblWri=1,
+        nDblRea=1,
+        functionName="random",
+        moduleName="KalmanFilter",
+        samplePeriod=samplePeriod) "Generate a random number in Python"
+        annotation (Placement(transformation(extent={{-40,0},{-20,20}})));
+      Modelica.Blocks.Sources.Clock clock
+        annotation (Placement(transformation(extent={{-80,0},{-60,20}})));
+      ISAT kalFil(
+        moduleName="KalmanFilter",
+        functionName="filter",
+        nDblWri=1,
+        nDblRea=1,
+        samplePeriod=samplePeriod) "Kalman filter in Python"
+        annotation (Placement(transformation(extent={{60,20},{80,40}})));
+
+      parameter Modelica.SIunits.Time samplePeriod=0.001
+        "Sample period of component";
+      Modelica.Blocks.Sources.Sine sine(freqHz=1) "Sine wave"
+        annotation (Placement(transformation(extent={{-40,40},{-20,60}})));
+      Modelica.Blocks.Math.Add add
+        annotation (Placement(transformation(extent={{20,20},{40,40}})));
+    equation
+     // Delete the temporary file generated by the Python file
+     // at the start and end of the simulation.
+     when {initial(), terminal()} then
+      Modelica.Utilities.Files.removeFile("tmp-kalman.pkl");
+    end when;
+
+      connect(clock.y, ran.uR[1]) annotation (Line(
+          points={{-59,10},{-42,10}},
+          color={0,0,127},
+          smooth=Smooth.None));
+
+      connect(add.y, kalFil.uR[1]) annotation (Line(
+          points={{41,30},{58,30}},
+          color={0,0,127},
+          smooth=Smooth.None));
+      connect(ran.yR[1], add.u2) annotation (Line(
+          points={{-19,10},{0,10},{0,24},{18,24}},
+          color={0,0,127},
+          smooth=Smooth.None));
+      connect(sine.y, add.u1) annotation (Line(
+          points={{-19,50},{0,50},{0,36},{18,36}},
+          color={0,0,127},
+          smooth=Smooth.None));
+      annotation (
+    experiment(Tolerance=1e-6, StopTime=1),
+    __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Utilities/IO/Python27/Examples/KalmanFilter.mos"
+            "Simulate and plot"),
+        Documentation(info="<html>
+<p>
+This example demonstrates the implementation of a Kalman filter
+in Python.
+The model generates a uniform random number, which is computed
+in the Python file <code>KalmanFilter.py</code> by the function
+<code>random(seed)</code>.
+This random number is added to a sine wave and then sent to
+the function <code>filter(u)</code> in the above Python file.
+The function <code>filter(u)</code> implements a Kalman filter that estimates and returns
+the state.
+The function saves its temporary variables to a file called
+<code>tmp-kalman.pkl</code>.
+</p>
+<p>
+When simulating this model, the figure below will be generated which
+shows the sine wave, the sine wave plus noise, which is input to the Kalman filter,
+and the estimated state which is the output of the Kalman filter.
+</p>
+<p align=\"center\">
+<img alt=\"image\" src=\"modelica://Buildings/Resources/Images/Utilities/IO/Python27/Examples/KalmanFilter.png\"/>
+</p>
+<h4>Implementation</h4>
+<p>
+The code is based on
+<a href=\"http://www.scipy.org/Cookbook/KalmanFiltering\">
+http://www.scipy.org/Cookbook/KalmanFiltering</a>.
+</p>
+</html>",     revisions="<html>
+<ul>
+<li>
+February 5, 2013, by Michael Wetter:<br/>
+First implementation.
+</li>
+</ul>
+</html>"));
+    end Room;
   annotation (preferredView="info", Documentation(info="<html>
 <p>
 This package contains examples for the use of models that can be found in
