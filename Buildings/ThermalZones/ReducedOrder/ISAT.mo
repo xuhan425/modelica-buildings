@@ -362,7 +362,7 @@ https://bugs.launchpad.net/ubuntu/+source/python2.7/+bug/1115466</a>.
         end for;
 
       // Exchange data
-      yR = Buildings.ThermalZones.ReducedOrder.ISAT.Functions.exchange(
+      yR =Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
           moduleName=moduleName,
           functionName=functionName,
           dblWri=uRWri,
@@ -458,7 +458,7 @@ Buildings.Utilities.IO.BCVTB.BCVTB</a>.
   package Functions "Package with functions that call Python"
     extends Modelica.Icons.BasesPackage;
 
-    function exchange "Function that communicates with Python"
+    function ISATExchange "Function that communicates with ISAT"
       input String moduleName
         "Name of the python module that contains the function";
       input String functionName=moduleName "Name of the python function";
@@ -507,17 +507,17 @@ Buildings.Utilities.IO.BCVTB.BCVTB</a>.
           content=pytPatBuildings);
      end if;
      // Call the exchange function
-     (dblRea, intRea) :=BaseClasses.exchange(
-        moduleName=moduleName,
-        functionName=functionName,
-        dblWri=dblWri,
-        intWri=intWri,
-        strWri=strWri,
-        nDblWri=nDblWri,
-        nDblRea=nDblRea,
-        nIntWri=nIntWri,
-        nIntRea=nIntRea,
-        nStrWri=nStrWri);
+     (dblRea, intRea) :=BaseClasses.isatExchangeData(
+            moduleName=moduleName,
+            functionName=functionName,
+            dblWri=dblWri,
+            intWri=intWri,
+            strWri=strWri,
+            nDblWri=nDblWri,
+            nDblRea=nDblRea,
+            nIntWri=nIntWri,
+            nIntRea=nIntRea,
+            nStrWri=nStrWri);
 
      // Change the PYTHONPATH back to what it was so that the function has no
      // side effects.
@@ -555,7 +555,7 @@ First implementation.
 </li>
 </ul>
 </html>"));
-    end exchange;
+    end ISATExchange;
 
     package Examples "Collection of models that illustrate model use and test models"
       extends Modelica.Icons.ExamplesPackage;
@@ -568,7 +568,7 @@ First implementation.
         Real    yR2[2] "Real function value";
         Integer yI2[2] "Integer function value";
       algorithm
-        yR1 := Buildings.ThermalZones.ReducedOrder.ISAT.Functions.exchange(
+        yR1 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
                 moduleName="testFunctions",
                 functionName="r1_r1",
                 dblWri={2.0},
@@ -581,7 +581,7 @@ First implementation.
                 strWri={""});
           assert(abs(4-yR1[1]) < 1e-5, "Error in function r1_r1");
 
-        yR1 := Buildings.ThermalZones.ReducedOrder.ISAT.Functions.exchange(
+        yR1 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
                 moduleName="testFunctions",
                 functionName="r2_r1",
                 dblWri={2.0,3.0},
@@ -594,7 +594,7 @@ First implementation.
                 strWri={""});
           assert(abs(6-yR1[1]) < 1e-5, "Error in function r2_r1");
 
-        yR2 := Buildings.ThermalZones.ReducedOrder.ISAT.Functions.exchange(
+        yR2 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
                 moduleName="testFunctions",
                 functionName="r1_r2",
                 dblWri={2.0},
@@ -609,7 +609,7 @@ First implementation.
 
         // In the call below, yR1 is a dummy variable, as exchange returns (Real[1], Integer[1])
         (yR1,yI1) :=
-          Buildings.ThermalZones.ReducedOrder.ISAT.Functions.exchange(
+          Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
                 moduleName="testFunctions",
                 functionName="i1_i1",
                 dblWri={0.0},
@@ -624,7 +624,7 @@ First implementation.
 
         // In the call below, yR1 is a dummy variable, as exchange returns (Real[1], Integer[2])
         (yR1,yI2) :=
-          Buildings.ThermalZones.ReducedOrder.ISAT.Functions.exchange(
+          Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
                 moduleName="testFunctions",
                 functionName="i1_i2",
                 dblWri={0.0},
@@ -637,7 +637,7 @@ First implementation.
                 strWri={""});
         assert(abs(yI2[1]-2) + abs(yI2[2]-4) < 1E-5, "Error in function i1_i2");
 
-        yR2 := Buildings.ThermalZones.ReducedOrder.ISAT.Functions.exchange(
+        yR2 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
                 moduleName="testFunctions",
                 functionName="r1i1_r2",
                 dblWri={0.3},
@@ -654,7 +654,7 @@ First implementation.
         // and return the number.
         Modelica.Utilities.Files.removeFile(fileName="tmp-TestPythonInterface.txt");
         Modelica.Utilities.Streams.print(string="1.23", fileName="tmp-TestPythonInterface.txt");
-        yR1 := Buildings.ThermalZones.ReducedOrder.ISAT.Functions.exchange(
+        yR1 :=Buildings.ThermalZones.ReducedOrder.ISAT.Functions.ISATExchange(
                 moduleName="testFunctions",
                 functionName="s2_r1",
                 dblWri={0.0},
@@ -710,7 +710,7 @@ The examples demonstrate how to call Python functions from Modelica.
     package BaseClasses "Package with functions that call Python"
       extends Modelica.Icons.BasesPackage;
 
-      function exchange "Function that communicates with Python"
+      function isatExchangeData "Function that communicates with ISAT"
         input String moduleName
           "Name of the python module that contains the function";
         input String functionName=moduleName "Name of the python function";
@@ -769,7 +769,85 @@ First implementation.
 </li>
 </ul>
 </html>"));
-      end exchange;
+      end isatExchangeData;
+
+      function isatStartCosimulation "Start the coupled simulation with ISAT"
+        input String cfdFilNam "CFD input file name";
+        input String[nSur] name "Surface names";
+        input Modelica.SIunits.Area[nSur] A "Surface areas";
+        input Modelica.SIunits.Angle[nSur] til "Surface tilt";
+        input Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions[nSur] bouCon
+          "Type of boundary condition";
+        input Integer nPorts(min=0)
+          "Number of fluid ports for the HVAC inlet and outlets";
+        input String portName[nPorts]
+          "Names of fluid ports as declared in the CFD input file";
+        input Boolean haveSensor "Flag, true if the model has at least one sensor";
+        input String sensorName[nSen]
+          "Names of sensors as declared in the CFD input file";
+        input Boolean haveShade "Flag, true if the windows have a shade";
+        input Integer nSur "Number of surfaces";
+        input Integer nSen(min=0)
+          "Number of sensors that are connected to CFD output";
+        input Integer nConExtWin(min=0) "number of exterior construction with window";
+        input Integer nXi(min=0) "Number of independent species";
+        input Integer nC(min=0) "Number of trace substances";
+        input Modelica.SIunits.Density rho_start "Density at initial state";
+        output Integer retVal
+          "Return value of the function (0 indicates CFD successfully started.)";
+      external"C" retVal = cfdStartCosimulation(
+          cfdFilNam,
+          name,
+          A,
+          til,
+          bouCon,
+          nPorts,
+          portName,
+          haveSensor,
+          sensorName,
+          haveShade,
+          nSur,
+          nSen,
+          nConExtWin,
+          nXi,
+          nC,
+          rho_start) annotation (Include="#include <cfdStartCosimulation.c>",
+            IncludeDirectory="modelica://Buildings/Resources/C-Sources",
+            LibraryDirectory="modelica://Buildings/Resources/Library", Library="ffd");
+
+        annotation (Documentation(info="<html>
+<p>
+This function calls a C function to start the coupled simulation with CFD.</html>",
+              revisions="<html>
+<ul>
+<li>
+August 16, 2013, by Wangda Zuo:<br/>
+First implementation.
+</li>
+</ul>
+</html>"));
+
+      end isatStartCosimulation;
+
+      function isatSendStopCommand "Send the stop command to ISAT"
+
+      external"C" cfdSendStopCommand() annotation (Include=
+              "#include <cfdSendStopCommand.c>", IncludeDirectory=
+              "modelica://Buildings/Resources/C-Sources");
+
+        annotation (Documentation(info="<html>
+<p>
+This function calls a C function to send a stop command to CFD to stop the CFD simulation.</html>",
+              revisions="<html>
+<ul>
+<li>
+August 16, 2013, by Wangda Zuo:<br/>
+First implementation.
+</li>
+</ul>
+</html>"));
+
+      end isatSendStopCommand;
     annotation (preferredView="info", Documentation(info="<html>
 <p>
 This package contains functions that call Python.
