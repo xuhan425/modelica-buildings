@@ -33,3 +33,7 @@ ParameterConstructionWithWindow
 PartialParameterConstruction
 SideFins
 Examples
+isatExchangeData
+isatReceiveFeedback
+isatSendStopCommand
+isatStartCosimulation
