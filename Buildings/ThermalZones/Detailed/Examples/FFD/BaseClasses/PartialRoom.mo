@@ -53,7 +53,7 @@ equation
       color={0,0,127},
       smooth=Smooth.None));
   connect(multiplex3_1.y, roo.qGai_flow) annotation (Line(
-      points={{1,50},{20,50},{20,48},{44,48}},
+      points={{1,50},{20,50},{20,48},{44.4,48}},
       color={0,0,127},
       smooth=Smooth.None));
   connect(weaDat.weaBus, roo.weaBus) annotation (Line(
