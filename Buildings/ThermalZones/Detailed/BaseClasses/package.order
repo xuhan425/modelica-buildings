@@ -2,6 +2,8 @@ CFDAirHeatMassBalance
 CFDExchange
 CFDFluidInterface
 CFDSurfaceInterface
+ISATAirHeatMassBalance
+ISATExchange
 ExteriorBoundaryConditions
 ExteriorBoundaryConditionsWithWindow
 HeatGain
