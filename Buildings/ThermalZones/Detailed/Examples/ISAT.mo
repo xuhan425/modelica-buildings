@@ -160,7 +160,7 @@ This is for
         linearizeRadiation = false,
         useCFD = true,
         sensorName = {"Occupied zone air temperature", "Velocity"},
-        cfdFilNam = "modelica://Buildings/Resources/Data/Rooms/FFD/Tutorial/MixedConvection.ffd",
+        cfdFilNam = "modelica://Buildings/Resources/Data/Rooms/ISAT/Tutorial/MixedConvection.ffd",
         nConExt = nConExt,
         nConExtWin = nConExtWin,
         nConPar = nConPar,
