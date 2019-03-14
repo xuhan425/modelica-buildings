@@ -34,7 +34,7 @@ model ISATAirHeatMassBalance "Heat and mass balance of the air based on ISAT"
   parameter Real uSha_fixed[nConExtWin]
     "Constant control signal for the shading device (0: unshaded; 1: fully shaded)";
 
-  CFDExchange cfd(
+  ISATExchange cfd(
     final cfdFilNam=cfdFilNam,
     final startTime=startTime,
     final activateInterface=useCFD,

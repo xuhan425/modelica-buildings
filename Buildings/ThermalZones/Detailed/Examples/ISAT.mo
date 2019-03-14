@@ -892,20 +892,18 @@ instructions for how to build such models.
           A={0.9,0.9,1,1,1,1},
           til={Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,
               Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Ceiling,Buildings.Types.Tilt.Floor},
-
           each absIR=1e-5,
           each absSol=1e-5,
           each boundaryCondition=Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature),
-
         nPorts=2,
         portName={"Inlet","Outlet"},
         cfdFilNam=
             "modelica://Buildings/Resources/Data/Rooms/FFD/ForcedConvection.ffd",
-
         samplePeriod=6,
         linearizeRadiation=true,
-        massDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial), nSurBou
-        =6);
+        massDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial), nSurBou=
+         6);
+
     HeatTransfer.Sources.FixedTemperature TWal[nSurBou](each T=283.15)
       "Temperature of other walls"
                                  annotation (Placement(transformation(
@@ -980,7 +978,6 @@ First implementation.
         samplePeriod=30,
         cfdFilNam=
             "modelica://Buildings/Resources/Data/Rooms/FFD/NaturalConvectionWithControl.ffd",
-
         massDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial));
 
     HeatTransfer.Sources.PrescribedHeatFlow preHeatFlo
@@ -1002,8 +999,7 @@ First implementation.
           origin={90,50})));
   equation
     connect(roo.yCFD[1], conPID.u_m) annotation (Line(
-        points={{101,-26.5},{100,-26.5},{100,-26},{110,-26},{110,20},{50,20},{50,
-            38}},
+        points={{101,-26},{100,-26},{100,-26},{110,-26},{110,20},{50,20},{50,38}},
         color={0,0,127},
         smooth=Smooth.None));
     connect(TSet.y, conPID.u_s) annotation (Line(
@@ -1092,11 +1088,9 @@ First implementation.
           name={"East Wall","West Wall","North Wall","South Wall","Floor",
               "Ceiling"},
           layers={matLayWal,matLayWal,matLayWal,matLayWal,matLayWal,matLayWal},
-
           each A=1*1,
           til={Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,
               Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Floor,Buildings.Types.Tilt.Ceiling},
-
           boundaryCondition={Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
@@ -1198,18 +1192,15 @@ First implementation.
           name={"East Wall","West Wall","North Wall","South Wall","Floor",
               "Ceiling"},
           layers={matLayWal,matLayWal,matLayWal,matLayWal,matLayWal,matLayWal},
-
           each A=1*1,
           til={Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,
               Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Floor,Buildings.Types.Tilt.Ceiling},
-
           boundaryCondition={Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature}),
-
         samplePeriod=30));
 
     annotation (
@@ -1275,7 +1266,6 @@ First implementation.
           each A=1*1,
           til={Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,
               Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Floor,Buildings.Types.Tilt.Ceiling},
-
           each absIR=1e-5,
           each absSol=1e-5,
           boundaryCondition={Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
@@ -1392,7 +1382,6 @@ First implementation.
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature}),
-
         datConExtWin(
           name={"East Wall","West Wall"},
           layers={matLayExt,matLayExt},
@@ -1405,7 +1394,6 @@ First implementation.
           azi={Buildings.Types.Azimuth.E,Buildings.Types.Azimuth.W},
           boundaryCondition={Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature}),
-
         uSha_fixed={0.5,0.5},
         samplePeriod=10,
         linearizeRadiation=true,
@@ -1471,7 +1459,6 @@ First implementation.
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature}),
-
         datConExtWin(
           name={"East Wall","West Wall"},
           layers={matLayExt,matLayExt},
@@ -1484,10 +1471,8 @@ First implementation.
           azi={Buildings.Types.Azimuth.E,Buildings.Types.Azimuth.W},
           boundaryCondition={Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
               Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature}),
-
         cfdFilNam=
             "modelica://Buildings/Resources/Data/Rooms/FFD/WindowWithoutShade.ffd",
-
         uSha_fixed={0,0}));
 
     parameter HeatTransfer.Data.OpaqueConstructions.Insulation100Concrete200 matLayExt
@@ -1554,7 +1539,7 @@ First implementation.
       parameter Integer nConExt=0
         "Number of exterior constructions withour a window";
       parameter Integer nConPar=0 "Number of partition constructions";
-      Buildings.ThermalZones.Detailed.CFD roo(
+      Buildings.ThermalZones.Detailed.ISAT roo(
         redeclare package Medium = MediumA,
         nConBou=nConBou,
         nSurBou=nSurBou,
@@ -1630,6 +1615,164 @@ This package contains base classes that are used to construct the models in
 </p>
 </html>"));
   end BaseClasses;
+
+  model ForcedConvection_test
+    "Ventilation with forced convection in an empty room"
+    extends Modelica.Icons.Example;
+    extends
+      Buildings.ThermalZones.Detailed.Examples.ISAT.BaseClasses.PartialRoom(
+       roo(
+        surBou(
+          name={"East Wall","West Wall"},
+          A={1,1},
+          til={Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall},
+          each absIR=1e-5,
+          each absSol=1e-5,
+          each boundaryCondition=Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature),
+        nPorts=0,
+        cfdFilNam="modelica://Buildings/Resources/Data/Rooms/FFD/ForcedConvection.ffd",
+        samplePeriod=6,
+        linearizeRadiation=true,
+        massDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial), nSurBou=6);
+
+    HeatTransfer.Sources.FixedTemperature TWal[nSurBou](each T=283.15)
+      "Temperature of other walls"
+                                 annotation (Placement(transformation(
+          extent={{10,-10},{-10,10}},
+          origin={110,10})));
+    Fluid.Sources.FixedBoundary bouOut(nPorts=1, redeclare package Medium =
+          MediumA)
+      annotation (Placement(transformation(extent={{0,-10},{20,10}})));
+    Fluid.Sources.MassFlowSource_T bounIn(
+      nPorts=1,
+      redeclare package Medium = MediumA,
+      m_flow=0.01,
+      T=283.15) annotation (Placement(transformation(extent={{0,20},{20,40}})));
+  equation
+    for i in 1:nSurBou loop
+      connect(TWal[i].port, roo.surf_surBou[i])    annotation (Line(
+        points={{100,10},{62.2,10},{62.2,26}},
+        color={191,0,0},
+        smooth=Smooth.None));
+    end for;
+      connect(bounIn.ports[1], roo.ports[1]) annotation (Line(
+        points={{20,30},{30,30},{30,30},{51,30}},
+        color={0,127,255},
+        smooth=Smooth.None));
+    connect(bouOut.ports[1], roo.ports[2]) annotation (Line(
+        points={{20,0},{36,0},{36,30},{51,30}},
+        color={0,127,255},
+        smooth=Smooth.None));
+    annotation (
+      Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{200,200}})),
+      __Dymola_Commands(file= "modelica://Buildings/Resources/Scripts/Dymola/ThermalZones/Detailed/Examples/FFD/ForcedConvection.mos"
+          "Simulate and plot"),
+      experiment(Tolerance=1e-06, StopTime=120),
+      Documentation(info="<html>
+<p>
+This model tests the coupled simulation of
+<a href=\"modelica://Buildings.ThermalZones.Detailed.CFD\">
+Buildings.ThermalZones.Detailed.CFD</a>
+with the FFD program by simulating the ventilation with forced convection in an empty room.
+Figure (a) shows the schematic of the FFD simulation and Figure (b) shows streamlines and contours of the horizontal velocity U as simulated by the FFD.
+</p>
+<p align=\"center\">
+<img alt=\"image\" src=\"modelica://Buildings/Resources/Images/ThermalZones/Detailed/Examples/FFD/ConvectionSchematic.png\" border=\"1\"/>
+</p>
+<p align=\"center\">
+Figure (a)
+</p>
+<p align=\"center\">
+<img alt=\"image\" src=\"modelica://Buildings/Resources/Images/ThermalZones/Detailed/Examples/FFD/ForcedConvection.png\" border=\"1\"/>
+</p>
+<p align=\"center\">
+Figure (b)
+</p>
+<p align=\"left\">
+</html>",   revisions="<html>
+<ul>
+<li>
+December 31, 2013, by Wangda Zuo:<br/>
+First implementation.
+</li>
+</ul>
+</html>"));
+  end ForcedConvection_test;
+
+  model RoomOnlyExteriorWallNoWindow_test
+    "Natural convection in an empty room with only exterior walls without windows."
+    extends Modelica.Icons.Example;
+    parameter Buildings.HeatTransfer.Data.OpaqueConstructions.Generic matLayWal(
+        final nLay=1, material={HeatTransfer.Data.Solids.Steel(x=0.001)},
+      roughness_a=Buildings.HeatTransfer.Types.SurfaceRoughness.Smooth)
+      "Construction material for all the envelopes"
+      annotation (Placement(transformation(extent={{20,140},{40,160}})));
+    extends Buildings.ThermalZones.Detailed.Examples.FFD.BaseClasses.PartialRoom(
+      nConExt=2,
+      nConExtWin=0,
+      nConPar=0,
+      nConBou=0,
+      nSurBou=0,
+      roo(
+        nConExt=nConExt,
+        datConExt(
+          name={"East Wall","West Wall"},
+          layers={matLayWal,matLayWal},
+          each A=1*1,
+          til={Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall},
+          boundaryCondition={Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
+              Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature}),
+        samplePeriod=30));
+
+    annotation (
+      Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{
+              200,200}}), graphics),
+      __Dymola_Commands(file=
+            "modelica://Buildings/Resources/Scripts/Dymola/ThermalZones/Detailed/Examples/FFD/RoomOnlyExteriorWallNoWindow.mos"
+          "Simulate and plot"),
+      experiment(Tolerance=1e-06, StopTime=1800),
+      Documentation(info="<html>
+<p>
+This model tests the coupled simulation of
+<a href=\"modelica://Buildings.ThermalZones.Detailed.CFD\">
+Buildings.ThermalZones.Detailed.CFD</a>
+with the FFD program by simulating the natural convection in an empty room with only exterior walls and without windows.
+</p>
+<p>
+Figure (a) shows the schematic of the FFD simulation.
+The room is <i>1</i> meter in length, width and height.
+The walls are exposed to the ambient environment (cold winter night in Chicago) and the insulation is very poor.
+The initial values are for the temperatures of the walls <i>20</i>&circ;C and for temperature of the air <i>30</i>&circ;C.
+All temperature drop quickly due to the heat loss.
+Two sensors are placed in the room center at (<i>0.5</i> m, <i>0.5</i> m, <i>0.5</i> m)
+that measure the temperature and the velocity.
+</p>
+<p align=\"center\">
+<img alt=\"image\" src=\"modelica://Buildings/Resources/Images/ThermalZones/Detailed/Examples/FFD/OnlyWallSchematic.png\" border=\"1\"/>
+</p>
+<p align=\"center\">
+Figure (a)
+</p>
+<p>
+Figure (b) shows the velocity vectors and temperature contours in degree Celsius on the X-Z plane at <i>Y = 0.5</i> m as simulated by the FFD.
+In the cold mid-night of Chicago, the temperature of the ceiling is the lowest and the temperature of the ground floor is the highest.
+</p>
+<p align=\"center\">
+<img alt=\"image\" src=\"modelica://Buildings/Resources/Images/ThermalZones/Detailed/Examples/FFD/RoomOnlyExteriorWallNoWindow.png\" border=\"1\"/>
+</p>
+<p align=\"center\">
+Figure (b)
+</p>
+<p align=\"left\">
+</html>",   revisions="<html>
+<ul>
+<li>
+August 13, 2013, by Wangda Zuo:<br/>
+First implementation.
+</li>
+</ul>
+</html>"));
+  end RoomOnlyExteriorWallNoWindow_test;
 annotation (Documentation(info="<html>
 <p>
 This package tests the coupled simulation of the model

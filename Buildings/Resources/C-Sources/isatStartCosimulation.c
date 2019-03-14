@@ -14,8 +14,7 @@
  * \date   2/14/2017
  *
  */
-#include "cfdCosimulation.h"
-
+#include "isatCosimulation.h"
 /*
  * Start the cosimulation
  *
@@ -41,7 +40,7 @@
  *
  * @return 0 if no error occurred
  */
-int cfdStartCosimulation(char *cfdFilNam, char **name, double *A, double *til,
+int isatStartCosimulation(char *cfdFilNam, char **name, double *A, double *til,
                 int *bouCon, int nPorts, char** portName, int haveSensor,
                 char **sensorName, int haveShade, size_t nSur, size_t nSen,
                 size_t nConExtWin, size_t nXi, size_t nC, double rho_start) {
@@ -137,7 +136,7 @@ int cfdStartCosimulation(char *cfdFilNam, char **name, double *A, double *til,
   /****************************************************************************
   | Implicitly launch DLL module.
   ****************************************************************************/
-  ffd_dll(cosim);
+  isat_dll(cosim);
 
   return 0;
 } /* End of cfdStartCosimulation()*/

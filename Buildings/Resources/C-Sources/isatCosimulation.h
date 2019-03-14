@@ -36,4 +36,4 @@ CosimulationData *cosim;
 char msg[1000];
 
 /*declare the ffd_dll function in DLL*/
-int ffd_dll(CosimulationData *cosim);
+int isat_dll(CosimulationData *cosim);

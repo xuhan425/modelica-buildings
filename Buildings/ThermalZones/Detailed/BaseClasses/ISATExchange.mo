@@ -94,7 +94,7 @@ protected
     end for;
 
     Modelica.Utilities.Streams.print(string="Start cosimulation");
-    coSimFlag := cfdStartCosimulation(
+    coSimFlag := isatStartCosimulation(
         cfdFilNam,
         name,
         A,
@@ -138,7 +138,7 @@ protected
       Modelica.Utilities.Streams.print("CFDExchange:exchange at t=" + String(t));
     end if;
 
-    (modTimRea,y,retVal) := cfdExchangeData(
+    (modTimRea,y,retVal) := isatExchangeData(
         flag,
         t,
         dt,

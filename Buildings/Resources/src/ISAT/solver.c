@@ -43,7 +43,7 @@ int FFD_solver(PARA_DATA *para, REAL **var, int **BINDEX) {
     /*-------------------------------------------------------------------------*/
     /* Integration*/
     /*-------------------------------------------------------------------------*/
-    flag = vel_step(para, var, BINDEX);
+/*    flag = vel_step(para, var, BINDEX);
     if(flag != 0) {
       ffd_log("FFD_solver(): Could not solve velocity.", FFD_ERROR);
       return flag;
@@ -66,7 +66,7 @@ int FFD_solver(PARA_DATA *para, REAL **var, int **BINDEX) {
     }
     else if(para->outp->version==DEBUG)
       ffd_log("FFD_solver(): solved density step.", FFD_NORMAL);
-
+*/
     timing(para);
 
     /*-------------------------------------------------------------------------*/

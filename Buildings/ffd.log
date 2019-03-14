@@ -1,0 +1,98 @@
+Start Fast Fluid Dynamics Simulation with Thread ID 10123392
+fileName="C:/github/modelica-buildings/Buildings/Resources/Data/Rooms/FFD/OnlyWall.ffd"
+read_parameter(): Opened file C:/github/modelica-buildings/Buildings/Resources/Data/Rooms/FFD/OnlyWall.ffd for FFD parameters with base directory C:/github/modelica-buildings/Buildings/Resources/Data/Rooms/FFD/
+assign_parameter(): inpu.parameter_file_format=SCI
+assign_parameter(): inpu.parameter_file_name=C:/github/modelica-buildings/Buildings/Resources/Data/Rooms/FFD/OnlyWall.cfd
+assign_parameter(): inpu.block_file_name=C:/github/modelica-buildings/Buildings/Resources/Data/Rooms/FFD/EmptyRoom.dat
+assign_parameter(): geom.Lx=1.000000
+assign_parameter(): geom.Ly=1.000000
+assign_parameter(): geom.Lz=1.000000
+assign_parameter(): geom.imax=10
+assign_parameter(): geom.jmax=10
+assign_parameter(): geom.kmax=10
+assign_parameter(): geom.index=600
+assign_parameter(): inpu.read_old_ffd_file=0
+assign_parameter(): geom.dx=0.100000
+assign_parameter(): geom.dy=0.100000
+assign_parameter(): geom.dz=0.100000
+assign_parameter(): geom.uniform=1
+assign_parameter(): outp.version=RUN
+assign_parameter(): prob.nu=0.000016
+assign_parameter(): prob.rho=1.177400
+assign_parameter(): prob.gravx=0.000000
+assign_parameter(): prob.gravy=0.000000
+assign_parameter(): prob.gravz=-9.810000
+assign_parameter(): prob.cond=0.026240
+assign_parameter(): prob.Cp=1006.000000
+assign_parameter(): prob.beta=0.003600
+assign_parameter(): prob.diff=0.000010
+assign_parameter(): prob.coeff_h=0.000400
+assign_parameter(): prob.force=1.000000
+assign_parameter(): prob.source=1.000000
+assign_parameter(): prob.movie=0
+assign_parameter(): prob.tur_model=LAM
+assign_parameter(): prob.chen_a=0.038740
+assign_parameter(): prob.Prt=0.900000
+assign_parameter(): prob.Temp_Buoyancy=20.000000
+assign_parameter(): mytime.t_steady=100.000000
+assign_parameter(): bc.nb_Xi=1
+assign_parameter(): solv.solver=GS
+assign_parameter(): solv.check_residual=0
+assign_parameter(): solv.advection_solver=SEMI
+assign_parameter(): solv.interpolation=BILINEAR
+assign_parameter(): solv.cosimulation=1
+assign_parameter(): sensor.nb_sensor=2
+assign_parameter(): sensor.name=OccupiedZoneAirTemperature
+assign_parameter(): sensor.name=Velocity
+assign_parameter(): init.T=30.000000
+assign_parameter(): init.u=0.000000
+assign_parameter(): init.v=0.000000
+assign_parameter(): init.w=0.000000
+read_sci_input(): Start to read sci input file C:/github/modelica-buildings/Buildings/Resources/Data/Rooms/FFD/OnlyWall.cfd
+read_sci_input(): para->bc->nb_bc=6
+read_sci_input(): para->bc->nb_inlet=0
+read_sci_input(): para->bc->nb_outlet=0
+read_sci_input(): para->bc->nb_block=0
+read_sci_input(): para->bc->nb_wall=6
+read_sci_input(): para->bc->wallName[0]="West Wall"
+read_sci_input(): ThermalBC=1, T/q_dot=0.000000
+read_sci_input(): para->bc->wallName[1]="East Wall"
+read_sci_input(): ThermalBC=1, T/q_dot=1.000000
+read_sci_input(): para->bc->wallName[2]="North Wall"
+read_sci_input(): ThermalBC=0, T/q_dot=0.000000
+read_sci_input(): para->bc->wallName[3]="South Wall"
+read_sci_input(): ThermalBC=0, T/q_dot=0.000000
+read_sci_input(): para->bc->wallName[4]="Ceiling"
+read_sci_input(): ThermalBC=0, T/q_dot=0.000000
+read_sci_input(): para->bc->wallName[5]="Floor"
+read_sci_input(): ThermalBC=0, T/q_dot=0.000000
+read_sci_input(): para->bc->nb_source=0
+read_sci_input(): para->mytime->t_start=0.000000
+read_sci_input(): para->mytime->dt=0.100000
+read_sci_input(): para->mytime->step_total=10
+read_sci_input(): Read sci input file C:/github/modelica-buildings/Buildings/Resources/Data/Rooms/FFD/OnlyWall.cfd
+read_sci_input(): start to read block information from "C:/github/modelica-buildings/Buildings/Resources/Data/Rooms/FFD/EmptyRoom.dat".
+read_sci_input(): end of reading zeroone.dat.
+bounary_area(): Calculated surface area for FFD boundaries are:
+	Wall boundaries:
+		West Wall: 1.000000[m2]
+		East Wall: 1.000000[m2]
+		North Wall: 1.000000[m2]
+		South Wall: 1.000000[m2]
+		Ceiling: 1.000000[m2]
+		Floor: 1.000000[m2]
+-------------------------------------------------------------------
+ERROR in read_cosim_parameter(): Modelica(2) and FFD(6) have different numbers of solid surfaces.
+	Modelica Surfaces are:
+		East Wall
+		West Wall
+	FFD Surfaces are:
+		West Wall
+		East Wall
+		North Wall
+		South Wall
+		Ceiling
+		Floor
+ERROR in set_initial_data(): Could not read cosimulation parameters.
+ERROR in ffd(): Could not set initial data.
+ERROR in ffd_thread(): Cosimulation failed

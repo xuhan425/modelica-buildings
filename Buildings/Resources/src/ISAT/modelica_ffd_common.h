@@ -53,6 +53,8 @@ typedef struct {
   REAL **XiPor; /* XiPor[nPorts][Medium.nXi]: species concentration of inflowing medium at the port*/
              /* First Medium.nXi elements are for port 1*/
   REAL **CPor; /* CPor[nPorts][Medium.nC]: the trace substances of the inflowing medium*/
+	REAL *input;
+	REAL *output;	
 }ModelicaSharedData;
 
 typedef struct {
@@ -68,6 +70,8 @@ typedef struct {
   REAL **CPor; /* CPor[nPorts][medium.nC]: the trace substances of medium at the port*/
   REAL *senVal; /* senVal[nSen]: value of sensor data*/
   char *msg; /* Message to be passed to Modelica*/
+	REAL *input;
+	REAL *output;	
 }ffdSharedData;
 
 typedef struct{
