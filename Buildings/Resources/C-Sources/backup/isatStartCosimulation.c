@@ -15,9 +15,6 @@
  *
  */
 #include "isatCosimulation.h"
-#include "stdlib.h"
-#include "stdio.h"
-
 /*
  * Start the cosimulation
  *
@@ -48,8 +45,6 @@ int isatStartCosimulation(char *cfdFilNam, char **name, double *A, double *til,
                 char **sensorName, int haveShade, size_t nSur, size_t nSen,
                 size_t nConExtWin, size_t nXi, size_t nC, double rho_start) {
   size_t i, nBou;
-	FILE *f = fopen("log.txt","a+");
-	fprintf(f, "Start to call isat.dll");
   /****************************************************************************
   | For call FFD-DLL
   ****************************************************************************/
@@ -142,6 +137,6 @@ int isatStartCosimulation(char *cfdFilNam, char **name, double *A, double *til,
   | Implicitly launch DLL module.
   ****************************************************************************/
   isat_dll(cosim);
-	fprintf(f, "Already called isat.dll");
+
   return 0;
 } /* End of cfdStartCosimulation()*/

@@ -28,7 +28,6 @@
 
 #ifndef _MODELICA_FFD_COMMON_H
 #define _MODELICA_FFD_COMMON_H
-/*#include "../src/FastFluidDynamics/modelica_ffd_common.h"*/
 #include "../src/ISAT/modelica_ffd_common.h"
 #include <stdint.h> /* Needed to detect 32 vs. 64 bit using UINTPTR_MAX*/
 #endif
@@ -37,4 +36,4 @@ CosimulationData *cosim;
 char msg[1000];
 
 /*declare the ffd_dll function in DLL*/
-int ffd_dll(CosimulationData *cosim);
+int isat_dll(CosimulationData *cosim);
