@@ -913,16 +913,18 @@ instructions for how to build such models.
       m_flow=0.01,
       T=283.15) annotation (Placement(transformation(extent={{0,20},{20,40}})));
     Modelica.Blocks.Sources.TimeTable timeTable(
-                                             startTime=0, table=[0,275.15; 20,275.15;
-          40,277.15; 60,281.15; 80,281.15; 100,276.15; 120,276.15])
+                                             startTime=0, table=[0,276.15; 199,
+          276.15; 200,275.15; 399,275.15; 400,281.15; 599,281.15; 600,274.15;
+          799,274.15; 800,277.15; 1000,277.15])
       annotation (Placement(transformation(extent={{-42,-60},{-22,-40}})));
     HeatTransfer.Sources.PrescribedTemperature IT_Power1
       annotation (Placement(transformation(extent={{20,-60},{40,-40}})));
-    Modelica.Blocks.Sources.TimeTable timeTable1(startTime=0, table=[0,278.15; 20,
-          278.15; 40,277.15; 60,275.15; 80,275.15; 100,281.15; 120,281.15])
-      annotation (Placement(transformation(extent={{-42,-92},{-22,-72}})));
     HeatTransfer.Sources.PrescribedTemperature IT_Power2
       annotation (Placement(transformation(extent={{20,-92},{40,-72}})));
+    Modelica.Blocks.Sources.TimeTable timeTable1(startTime=0, table=[0,276.15;
+          199,276.15; 200,278.15; 399,278.15; 400,275.15; 599,275.15; 600,
+          283.15; 799,283.15; 800,280.15; 1000,280.15])
+      annotation (Placement(transformation(extent={{-42,-92},{-22,-72}})));
   equation
     for i in 2:nSurBou loop
       connect(IT_Power1.port, roo.surf_surBou[i]) annotation (Line(
@@ -940,10 +942,10 @@ instructions for how to build such models.
         smooth=Smooth.None));
     connect(timeTable.y, IT_Power1.T)
       annotation (Line(points={{-21,-50},{18,-50}}, color={0,0,127}));
-    connect(timeTable1.y, IT_Power2.T)
-      annotation (Line(points={{-21,-82},{18,-82}}, color={0,0,127}));
     connect(IT_Power2.port, roo.surf_surBou[1]) annotation (Line(points={{40,-82},
             {62,-82},{62,26},{62.2,26}}, color={191,0,0}));
+    connect(timeTable1.y, IT_Power2.T)
+      annotation (Line(points={{-21,-82},{18,-82}}, color={0,0,127}));
     annotation (
       Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{200,200}})),
       __Dymola_Commands(file= "modelica://Buildings/Resources/Scripts/Dymola/ThermalZones/Detailed/Examples/FFD/ForcedConvection.mos"
