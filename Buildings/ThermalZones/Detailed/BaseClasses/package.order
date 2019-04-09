@@ -2,6 +2,7 @@ CFDAirHeatMassBalance
 CFDExchange
 CFDFluidInterface
 CFDSurfaceInterface
+ISATDataCenterApp
 ISATAirHeatMassBalance
 ISATExchange
 ExteriorBoundaryConditions

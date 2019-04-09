@@ -665,7 +665,7 @@ equation
       smooth=Smooth.None));
   // Connections to heat port of air volume
   connect(cfd.y[kHeaPorAir + 1], cfdHeaPorAir.T) annotation (Line(
-      points={{-19,190},{60,190},{60,8.88178e-16},{-138,8.88178e-16}},
+      points={{-19,190},{62,190},{62,8.88178e-16},{-138,8.88178e-16}},
       color={0,0,127},
       smooth=Smooth.None));
   // Connections to shade
@@ -680,7 +680,7 @@ equation
           color={0,0,127},
           smooth=Smooth.None));
       connect(cfd.y[kTSha + i], TSha[i]) annotation (Line(
-          points={{-19,190},{60,190},{60,60},{-250,60}},
+          points={{-19,190},{58,190},{58,60},{-250,60}},
           color={0,0,127},
           smooth=Smooth.None));
     end for;

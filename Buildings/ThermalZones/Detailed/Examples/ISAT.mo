@@ -1630,30 +1630,28 @@ This package contains base classes that are used to construct the models in
 </html>"));
   end BaseClasses;
 
-  model ForcedConvection_test
-    "Ventilation with forced convection in an empty room"
+  model DataCenter "Ventilation with forced convection in an empty room"
     extends Modelica.Icons.Example;
     extends
-      Buildings.ThermalZones.Detailed.Examples.ISAT.BaseClasses.PartialRoom(
-       roo(
+      Buildings.ThermalZones.Detailed.Examples.ISAT.BaseClasses.PartialRoom(roo(
         surBou(
-          name={"East Wall","West Wall"},
-          A={1,1},
-          til={Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall},
+          name={"East Wall","West Wall","North Wall","South Wall","Ceiling",
+              "Floor"},
+          A={0.9,0.9,1,1,1,1},
+          til={Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall,
+              Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Ceiling,Buildings.Types.Tilt.Floor},
           each absIR=1e-5,
           each absSol=1e-5,
           each boundaryCondition=Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature),
-        nPorts=0,
-        cfdFilNam="modelica://Buildings/Resources/Data/Rooms/FFD/ForcedConvection.ffd",
-        samplePeriod=6,
+        nPorts=2,
+        portName={"Inlet","Outlet"},
+        cfdFilNam=
+            "modelica://Buildings/Resources/Data/Rooms/FFD/ForcedConvection.ffd",
+        samplePeriod=5,
         linearizeRadiation=true,
-        massDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial), nSurBou=6);
+        massDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial), nSurBou=
+         6);
 
-    HeatTransfer.Sources.FixedTemperature TWal[nSurBou](each T=283.15)
-      "Temperature of other walls"
-                                 annotation (Placement(transformation(
-          extent={{10,-10},{-10,10}},
-          origin={110,10})));
     Fluid.Sources.FixedBoundary bouOut(nPorts=1, redeclare package Medium =
           MediumA)
       annotation (Placement(transformation(extent={{0,-10},{20,10}})));
@@ -1662,21 +1660,40 @@ This package contains base classes that are used to construct the models in
       redeclare package Medium = MediumA,
       m_flow=0.01,
       T=283.15) annotation (Placement(transformation(extent={{0,20},{20,40}})));
+    Modelica.Blocks.Sources.TimeTable timeTable(
+                                             startTime=0, table=[0,276.15; 199,
+          276.15; 200,275.15; 399,275.15; 400,281.15; 599,281.15; 600,274.15;
+          799,274.15; 800,277.15; 1000,277.15])
+      annotation (Placement(transformation(extent={{-42,-60},{-22,-40}})));
+    HeatTransfer.Sources.PrescribedTemperature IT_Power1
+      annotation (Placement(transformation(extent={{20,-60},{40,-40}})));
+    HeatTransfer.Sources.PrescribedTemperature IT_Power2
+      annotation (Placement(transformation(extent={{20,-92},{40,-72}})));
+    Modelica.Blocks.Sources.TimeTable timeTable1(startTime=0, table=[0,276.15;
+          199,276.15; 200,278.15; 399,278.15; 400,275.15; 599,275.15; 600,
+          283.15; 799,283.15; 800,280.15; 1000,280.15])
+      annotation (Placement(transformation(extent={{-42,-92},{-22,-72}})));
   equation
-    for i in 1:nSurBou loop
-      connect(TWal[i].port, roo.surf_surBou[i])    annotation (Line(
-        points={{100,10},{62.2,10},{62.2,26}},
-        color={191,0,0},
-        smooth=Smooth.None));
+    for i in 2:nSurBou loop
+      connect(IT_Power1.port, roo.surf_surBou[i]) annotation (Line(
+          points={{40,-50},{62.2,-50},{62.2,26}},
+          color={191,0,0},
+          smooth=Smooth.None));
     end for;
       connect(bounIn.ports[1], roo.ports[1]) annotation (Line(
-        points={{20,30},{30,30},{30,30},{51,30}},
+        points={{20,30},{51,30}},
         color={0,127,255},
         smooth=Smooth.None));
     connect(bouOut.ports[1], roo.ports[2]) annotation (Line(
         points={{20,0},{36,0},{36,30},{51,30}},
         color={0,127,255},
         smooth=Smooth.None));
+    connect(timeTable.y, IT_Power1.T)
+      annotation (Line(points={{-21,-50},{18,-50}}, color={0,0,127}));
+    connect(IT_Power2.port, roo.surf_surBou[1]) annotation (Line(points={{40,-82},
+            {62,-82},{62,26},{62.2,26}}, color={191,0,0}));
+    connect(timeTable1.y, IT_Power2.T)
+      annotation (Line(points={{-21,-82},{18,-82}}, color={0,0,127}));
     annotation (
       Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{200,200}})),
       __Dymola_Commands(file= "modelica://Buildings/Resources/Scripts/Dymola/ThermalZones/Detailed/Examples/FFD/ForcedConvection.mos"
@@ -1711,68 +1728,56 @@ First implementation.
 </li>
 </ul>
 </html>"));
-  end ForcedConvection_test;
+  end DataCenter;
 
-  model RoomOnlyExteriorWallNoWindow_test
-    "Natural convection in an empty room with only exterior walls without windows."
+  model DataCenter2
+    "Ventilation with forced convection in an empty room"
+    import Buildings;
     extends Modelica.Icons.Example;
-    parameter Buildings.HeatTransfer.Data.OpaqueConstructions.Generic matLayWal(
-        final nLay=1, material={HeatTransfer.Data.Solids.Steel(x=0.001)},
-      roughness_a=Buildings.HeatTransfer.Types.SurfaceRoughness.Smooth)
-      "Construction material for all the envelopes"
-      annotation (Placement(transformation(extent={{20,140},{40,160}})));
-    extends Buildings.ThermalZones.Detailed.Examples.FFD.BaseClasses.PartialRoom(
-      nConExt=2,
-      nConExtWin=0,
-      nConPar=0,
-      nConBou=0,
-      nSurBou=0,
-      roo(
-        nConExt=nConExt,
-        datConExt(
-          name={"East Wall","West Wall"},
-          layers={matLayWal,matLayWal},
-          each A=1*1,
-          til={Buildings.Types.Tilt.Wall,Buildings.Types.Tilt.Wall},
-          boundaryCondition={Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature,
-              Buildings.ThermalZones.Detailed.Types.CFDBoundaryConditions.Temperature}),
-        samplePeriod=30));
 
+    Modelica.Blocks.Sources.TimeTable timeTable(
+                                             startTime=0, table=[0,276.15; 199,
+          276.15; 200,275.15; 399,275.15; 400,281.15; 599,281.15; 600,274.15;
+          799,274.15; 800,277.15; 1000,277.15])
+      annotation (Placement(transformation(extent={{-82,40},{-62,60}})));
+    HeatTransfer.Sources.PrescribedTemperature IT_Power1
+      annotation (Placement(transformation(extent={{-20,40},{0,60}})));
+    HeatTransfer.Sources.PrescribedTemperature IT_Power2
+      annotation (Placement(transformation(extent={{-20,8},{0,28}})));
+    Modelica.Blocks.Sources.TimeTable timeTable1(startTime=0, table=[0,276.15;
+          199,276.15; 200,278.15; 399,278.15; 400,275.15; 599,275.15; 600,
+          283.15; 799,283.15; 800,280.15; 1000,280.15])
+      annotation (Placement(transformation(extent={{-82,8},{-62,28}})));
+    Buildings.ThermalZones.Detailed.BaseClasses.ISATExchange iSATExchange
+      annotation (Placement(transformation(extent={{60,20},{80,40}})));
+  equation
+    for i in 2:nSurBou loop
+    end for;
+    connect(timeTable.y, IT_Power1.T)
+      annotation (Line(points={{-61,50},{-22,50}},  color={0,0,127}));
+    connect(timeTable1.y, IT_Power2.T)
+      annotation (Line(points={{-61,18},{-22,18}},  color={0,0,127}));
     annotation (
-      Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{
-              200,200}}), graphics),
-      __Dymola_Commands(file=
-            "modelica://Buildings/Resources/Scripts/Dymola/ThermalZones/Detailed/Examples/FFD/RoomOnlyExteriorWallNoWindow.mos"
+      Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{200,200}})),
+      __Dymola_Commands(file= "modelica://Buildings/Resources/Scripts/Dymola/ThermalZones/Detailed/Examples/FFD/ForcedConvection.mos"
           "Simulate and plot"),
-      experiment(Tolerance=1e-06, StopTime=1800),
+      experiment(Tolerance=1e-06, StopTime=120),
       Documentation(info="<html>
 <p>
 This model tests the coupled simulation of
 <a href=\"modelica://Buildings.ThermalZones.Detailed.CFD\">
 Buildings.ThermalZones.Detailed.CFD</a>
-with the FFD program by simulating the natural convection in an empty room with only exterior walls and without windows.
-</p>
-<p>
-Figure (a) shows the schematic of the FFD simulation.
-The room is <i>1</i> meter in length, width and height.
-The walls are exposed to the ambient environment (cold winter night in Chicago) and the insulation is very poor.
-The initial values are for the temperatures of the walls <i>20</i>&circ;C and for temperature of the air <i>30</i>&circ;C.
-All temperature drop quickly due to the heat loss.
-Two sensors are placed in the room center at (<i>0.5</i> m, <i>0.5</i> m, <i>0.5</i> m)
-that measure the temperature and the velocity.
+with the FFD program by simulating the ventilation with forced convection in an empty room.
+Figure (a) shows the schematic of the FFD simulation and Figure (b) shows streamlines and contours of the horizontal velocity U as simulated by the FFD.
 </p>
 <p align=\"center\">
-<img alt=\"image\" src=\"modelica://Buildings/Resources/Images/ThermalZones/Detailed/Examples/FFD/OnlyWallSchematic.png\" border=\"1\"/>
+<img alt=\"image\" src=\"modelica://Buildings/Resources/Images/ThermalZones/Detailed/Examples/FFD/ConvectionSchematic.png\" border=\"1\"/>
 </p>
 <p align=\"center\">
 Figure (a)
 </p>
-<p>
-Figure (b) shows the velocity vectors and temperature contours in degree Celsius on the X-Z plane at <i>Y = 0.5</i> m as simulated by the FFD.
-In the cold mid-night of Chicago, the temperature of the ceiling is the lowest and the temperature of the ground floor is the highest.
-</p>
 <p align=\"center\">
-<img alt=\"image\" src=\"modelica://Buildings/Resources/Images/ThermalZones/Detailed/Examples/FFD/RoomOnlyExteriorWallNoWindow.png\" border=\"1\"/>
+<img alt=\"image\" src=\"modelica://Buildings/Resources/Images/ThermalZones/Detailed/Examples/FFD/ForcedConvection.png\" border=\"1\"/>
 </p>
 <p align=\"center\">
 Figure (b)
@@ -1781,12 +1786,12 @@ Figure (b)
 </html>",   revisions="<html>
 <ul>
 <li>
-August 13, 2013, by Wangda Zuo:<br/>
+December 31, 2013, by Wangda Zuo:<br/>
 First implementation.
 </li>
 </ul>
 </html>"));
-  end RoomOnlyExteriorWallNoWindow_test;
+  end DataCenter2;
 annotation (Documentation(info="<html>
 <p>
 This package tests the coupled simulation of the model
