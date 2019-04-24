@@ -20,6 +20,8 @@ SkyRadiationExchange
 SolarRadiationExchange
 cfdExchangeData
 cfdStartCosimulation
+isatExchangeData
+isatStartCosimulation
 to_W
 CFDSurfaceIdentifier
 ConstructionNumbers
