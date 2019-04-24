@@ -3,6 +3,7 @@ CFDExchange
 CFDFluidInterface
 CFDSurfaceInterface
 CFDThread
+ISATThread
 ExteriorBoundaryConditions
 ExteriorBoundaryConditionsWithWindow
 HeatGain
