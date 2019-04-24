@@ -3,6 +3,7 @@ CFDExchange
 CFDFluidInterface
 CFDSurfaceInterface
 CFDThread
+ISATExchange
 ISATThread
 ExteriorBoundaryConditions
 ExteriorBoundaryConditionsWithWindow
